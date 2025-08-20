@@ -1,6 +1,6 @@
 {
   "name": "ingest-small",
-  "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
+  "image": "mcr.microsoft.com/devcontainers/python:latest",
   "features": {
     "ghcr.io/devcontainers/features/nix:1": {}
   }
