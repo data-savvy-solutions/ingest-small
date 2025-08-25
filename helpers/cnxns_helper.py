@@ -25,22 +25,30 @@ def get_cnxns(
     cnxns = {}
 
     ods = config["ods"]
-    mdh = config["mdh"]
 
-    ods_db = ods["database"]  # noqa: F841
-    mdh_db = mdh["database"]  # noqa: F841
+    cnxns["ods"] = db.dbms_cnxn(
+        ods["type"],
+        ods["server"],
+        ods["uid"],
+        ods["pwd"],
+        port=ods["port"],
+        driver=sql_driver,
+        database=ods["database"],
+        trust=ods["trust_cert"],
+    )
 
-    for source in ["mdh", "ods"]:
-        cnxns[source] = db.dbms_cnxn(
-            ods["type"],
-            ods["server"],
-            ods["uid"],
-            ods["pwd"],
-            port=ods["port"],
-            driver=sql_driver,
-            database=f"{source}_db",
-            trust=ods["trust_cert"],
-        )
+    cnxns["mdh"] = db.dbms_cnxn(
+        ods["type"],
+        ods["server"],
+        ods["uid"],
+        ods["pwd"],
+        port=ods["port"],
+        driver=sql_driver,
+        database=config["mdh"]["database"],
+        trust=ods["trust_cert"],
+    )
+
+    # TODO: we're not doing anything with instances here?!
 
     ignore_params = ["type", "uid", "pwd", "port", "database", "trust_cert"]
 
