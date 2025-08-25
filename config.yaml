@@ -1,0 +1,24 @@
+parameters:
+  sql_driver: "ODBC Driver 18 for SQL Server"
+
+mdh:
+  database: "mdh"
+  orchestration: "orchestration"
+
+ods:
+  type: "mssql"
+  server:
+  port: 1433
+  uid:
+  pwd:
+  database: "ods"
+  trust_cert: False
+
+dbms:
+  adventureworks_type: "mssql"
+  adventureworks:
+  adventureworks_port: 1433
+  adventureworks_uid:
+  adventureworks_pwd:
+  adventureworks_database: "AdventureWorks2022"
+  adventureworks_trust_cert: False
