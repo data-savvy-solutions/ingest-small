@@ -6,6 +6,7 @@ from glob import glob
 import sqlalchemy as sa
 import yaml
 from sqlalchemy import Engine
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.exc import ProgrammingError
 
 from helpers.cnxns_helper import get_cnxns
@@ -70,6 +71,59 @@ def _deploy_tables(
         c.close()
 
 
+def _populate_entity_params(
+    cnxn: Engine,
+    *instances: str
+) -> None:
+    """
+    Execute INSERT TABLE SQL Scripts.
+
+    Given a config object and a SQL ALCHEMY engine object, collect INSERT SQL
+    Scripts from the entity_list subdirectory and iterate over the resultant
+    dictionary, exectuing the scripts against the engine.
+
+    Args:
+        cnxn (Engine): SQL ALCHEMY engine object for database.
+        *instances (String): instances to populate.
+
+    Returns:
+        None
+    """
+
+    if instances:
+        modules = []
+        for instance in instances:
+            modules.extend(glob(f"entity_params/{instance}_params.py"))
+            print(modules)
+
+    else:
+        modules = glob("entity_params/*.py")
+
+    entity_list = {}
+    for module in modules:
+
+        spec = importlib.util.spec_from_file_location(module, module)
+        if not spec or not spec.loader:
+            raise ImportError("Cannot load module 'my_module'")
+
+        entities = importlib.util.module_from_spec(spec)
+        sys.modules[module] = entities
+        spec.loader.exec_module(entities)
+        entity_list.update(entities.populate_entity_list())
+
+    with cnxn.connect() as c:
+        for entity in entity_list.keys():
+            try:
+                c.execute(sa.text(entity_list[entity]))
+            except IntegrityError as e:
+                error = repr(e)
+                if "Cannot insert duplicate key" in error:
+                    pass  # the table has already been populated
+                else:
+                    raise Exception(error)
+        c.close()
+
+
 def run(
     config: dict,
     *instances: str,
@@ -79,9 +133,9 @@ def run(
     """
 
     cnxn = get_cnxns(config)["ods"]
-    print(cnxn)
 
     _deploy_tables(cnxn, *instances)
+    _populate_entity_params(cnxn, *instances)
 
 
 if __name__ == "__main__":

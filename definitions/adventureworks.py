@@ -34,6 +34,12 @@ def get_ddl() -> dict:
                ,[last_modified_date] [datetime] NULL
     );"""
 
+    # drop and create entity params to ensure latest data
+    definitions[f"{schema}_drop_entity_parameters"] = f"""
+        IF OBJECT_ID('{schema}.entity_params', 'U') IS NOT NULL
+        DROP TABLE {schema}.entity_params
+    ;"""
+
     definitions[f"{schema}_entity_params"] = f"""
         CREATE TABLE [{schema}].[entity_params](
                [table_name] [NVARCHAR](75) NOT NULL PRIMARY KEY
@@ -41,8 +47,6 @@ def get_ddl() -> dict:
                ,[business_key] [NVARCHAR](75) NOT NULL
                ,[modified_field] [NVARCHAR](75) NULL
                ,[ingest_method] [NVARCHAR](75) NULL
-               ,[skip_rows] [INT] NULL
-               ,[additional_syntax] [nvarchar](75) NULL
                ,[active] [BIT] NOT NULL
         );"""
 
