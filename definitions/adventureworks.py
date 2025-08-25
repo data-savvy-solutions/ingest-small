@@ -50,4 +50,12 @@ def get_ddl() -> dict:
                ,[active] [BIT] NOT NULL
         );"""
 
+    definitions[f"{schema}_Department"] = f"""
+        CREATE TABLE [{schema}].[Department](
+            [DepartmentID] [SMALLINT] NOT NULL
+            ,[Name] [VARCHAR](256) NOT NULL
+            ,[GroupName] [VARCHAR](256) NOT NULL
+            ,[ModifiedDate] [DATETIME] NOT NULL,
+        );"""
+
     return definitions
