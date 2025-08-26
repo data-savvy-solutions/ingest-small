@@ -150,7 +150,7 @@ class BaseClass(ABC):
         if df.empty:
             return None
         else:
-            return df[modified_field]
+            return df[modified_field][0]
 
     def transform_data(
         self,
@@ -409,8 +409,8 @@ class BaseClass(ABC):
                     chunksize_param,
                 ):
 
-                    chunk_size = len(chunk) if chunk is not None else 0
-                    if chunk_size > 1:
+                    if not chunk.empty:
+                        chunk_size = len(chunk)
                         chunk_count += 1
 
                         df = self.transform_data(
