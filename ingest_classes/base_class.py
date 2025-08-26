@@ -38,7 +38,7 @@ class BaseClass(ABC):
         self.source = cnxns["source"]
         self.target = cnxns["target"]
         self.schema = schema
-        self.status = "failed"
+        self.status = "succeeded"
         self.error = ""
 
     @abstractmethod
@@ -257,6 +257,14 @@ class BaseClass(ABC):
 
                 cnxn.execute(text(update))
 
+            elif chunk_count == 1:
+                # Only truncate table on first chunk
+                truncate = f"""
+                    TRUNCATE TABLE {self.schema}.{table_name};
+                """
+
+                cnxn.execute(text(truncate))
+
             insert = f"""
                 INSERT INTO {self.schema}.{table_name}
                 SELECT *
@@ -270,6 +278,90 @@ class BaseClass(ABC):
             """
 
             cnxn.execute(text(drop))
+
+            cnxn.close()
+
+    def write_to_history(
+        self,
+        run_id: int,
+        table_name: str,
+        load_method: str,
+        modified_field: str,
+        start_time: datetime,
+        end_time: datetime,
+        rows_processed: int,
+    ) -> None:
+        """
+        Writes metadata to the history table.
+
+        Given a DataFrame and some metadata, write out to the history table.
+
+        Args:
+            run_id (Integer): The run_id for the current run.
+            table_name (Sring): The table that was written out to.
+            load_method (String): The load method used to write to the
+                table.
+            modified_field: The name of the field containing the modified
+                value, used for incremental loads.
+            start_time (DateTime): The date and time the table run started.
+            end_time (DateTime): The date and time the table run ended.
+            rows_processed (Integer): How many rows were written to the
+                table.
+
+        Returns:
+            None.
+        """
+
+        time_taken = int((start_time - end_time).total_seconds())
+        start_time_str = start_time.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+        end_time_str = end_time.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+
+        with self.target.connect() as cnxn:
+
+            insert = f"""
+                INSERT INTO {self.schema}.history (
+                    run_id
+                    ,table_name
+                    ,start_time
+                    ,end_time
+                    ,time_taken
+                    ,rows_processed
+                )
+
+                VALUES (
+                    {run_id}
+                    ,'{table_name}'
+                    ,'{start_time_str}'
+                    ,'{end_time_str}'
+                    ,{time_taken}
+                    ,{rows_processed}
+                )
+            """
+
+            cnxn.execute(text(insert))
+
+            if load_method == "incremental":
+
+                # Read from target to ensure the actual max value is recorded
+                query = f"""
+                    SELECT MAX({modified_field}) AS max_modified
+                      FROM {self.schema}.{table_name}
+                     WHERE current_record = 1;
+                """
+
+                max_modified = db.dbms_reader(
+                    cnxn,
+                    query=text(query),
+                )["max_modified"][0]
+
+                update = f"""
+                    UPDATE {self.schema}.history
+                       SET {modified_field} = '{max_modified}'
+                     WHERE run_id = {run_id}
+                       AND table_name = '{table_name}';
+                """
+
+                cnxn.execute(text(update))
 
             cnxn.close()
 
@@ -294,7 +386,7 @@ class BaseClass(ABC):
 
         for table, parameters in params.items():
             start_time = datetime.now()
-            # rows_processed = 0
+            rows_processed = 0
             chunk_count = 0
 
             # Set a default chunksize if none given
@@ -303,30 +395,54 @@ class BaseClass(ABC):
                 else parameters["chunksize"],
             )
 
-            max_modified = self.read_history(
-                table,
-                parameters["modified_field"],
-            )
+            try:
+                max_modified = self.read_history(
+                    table,
+                    parameters["modified_field"],
+                )
 
-            for chunk in self.read_data(
-                parameters["entity_name"],
-                parameters["load_method"],
-                parameters["modified_field"],
-                max_modified,
-                chunksize_param,
-            ):
+                for chunk in self.read_data(
+                    parameters["entity_name"],
+                    parameters["load_method"],
+                    parameters["modified_field"],
+                    max_modified,
+                    chunksize_param,
+                ):
 
-                if len(chunk) > 1:
-                    df = self.transform_data(
-                        chunk,
-                        table,
-                        start_time,
-                    )
+                    chunk_size = len(chunk) if chunk is not None else 0
+                    if chunk_size > 1:
+                        chunk_count += 1
 
-                    self.write_data(
-                        df,
-                        table,
-                        parameters["load_method"],
-                        parameters["business_key"],
-                        chunk_count,
-                    )
+                        df = self.transform_data(
+                            chunk,
+                            table,
+                            start_time,
+                        )
+
+                        self.write_data(
+                            df,
+                            table,
+                            parameters["load_method"],
+                            parameters["business_key"],
+                            chunk_count,
+                        )
+
+                        rows_processed += chunk_size
+
+            except Exception as e:
+                error = repr(e)
+                self.status = "failed"
+                self.error += f"\ntable: {table}\n{error}"
+
+            if rows_processed > 0:
+                end_time = datetime.now()
+
+                self.write_to_history(
+                    cls_id,
+                    table,
+                    parameters["load_method"],
+                    parameters["modified_field"],
+                    start_time,
+                    end_time,
+                    rows_processed,
+                )

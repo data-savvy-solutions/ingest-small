@@ -45,6 +45,7 @@ class DBMSClass(BaseClass):
         if max_modified:
             query += f"""
                 WHERE {modified_field} > '{max_modified}'
+                ORDER BY {modified_field} asc';
             """
 
         for chunk in db.dbms_read_chunks(
