@@ -429,6 +429,8 @@ class BaseClass(ABC):
 
                         rows_processed += chunk_size
 
+            # Ensures that any error is recorded but allows failover to the
+            # next entity.
             except Exception as e:
                 error = repr(e)
                 self.status = "failed"
