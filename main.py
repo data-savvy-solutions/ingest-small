@@ -1,3 +1,4 @@
+import argparse
 from datetime import datetime
 
 import yaml
@@ -26,15 +27,43 @@ def run(
     )
 
     cls_dict = classes.class_dict
+    cls_instances = {}
 
-    adventureworks = cls_dict["DBMSClass"](
-        {
-            "source": cnxns["adventureworks"],
-            "target": cnxns["ods"],
-        },
-        config["ods"]["adventureworks"],
-    )
-    adventureworks()
+    if "adventureworks" in instances:
+        cls_instances["adventureworks"] = cls_dict["DBMSClass"](
+            {
+                "source": cnxns["adventureworks"],
+                "target": cnxns["ods"],
+            },
+            config["ods"]["adventureworks"],
+        )
+
+    if len(cls_instances) == 0:
+        raise KeyError("Please specify a valid instance")
+
+    else:
+
+        for cls in cls_instances.keys():
+            cls_started = datetime.now()
+
+            cls_id = update_log_running(
+                cnxns["mdh"],
+                f"{job}_{cls}",
+                cls_started,
+                parent_id=run_id,
+            )
+
+            cls_instances[cls](cls_id)
+            cls_status = cls_instances[cls].status
+
+            run_status = cls_status if cls_status == "failed" else run_status
+
+            update_log_finished(
+                cnxns["mdh"],
+                run_id,
+                cls_started,
+                cls_status,
+            )
 
     update_log_finished(
         cnxns["mdh"],
@@ -49,6 +78,10 @@ if __name__ == "__main__":
     with open("config.yaml", "r") as f:
         config = yaml.safe_load(f)
 
-    instances = "adventureworks"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--instances", type=str, nargs="*", default=[])
 
-    run(config, instances)
+    args = parser.parse_args()
+    instances = args.instances
+
+    run(config, *instances)

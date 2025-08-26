@@ -31,7 +31,7 @@ def get_ddl() -> dict:
                ,[end_time] [datetime] NOT NULL
                ,[time_taken] [int] NOT NULL
                ,[rows_processed] [int] NOT NULL
-               ,[last_modified_date] [datetime] NULL
+               ,[modifieddate] [datetime] NULL
     );"""
 
     # drop and create entity params to ensure latest data

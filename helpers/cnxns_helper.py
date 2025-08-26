@@ -58,7 +58,7 @@ def get_cnxns(
         if not any(param in source for param in ignore_params)
     ]
 
-    for source in dbms_sources:
+    for source in dbms_sources and instances:
         cnxns[source] = db.dbms_cnxn(
             dbms[f"{source}_type"],
             dbms[source],
