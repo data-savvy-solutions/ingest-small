@@ -203,6 +203,76 @@ class BaseClass(ABC):
 
         return df[fields]
 
+    def write_data(
+        self,
+        df: DataFrame,
+        table_name: str,
+        load_method: str,
+        business_key: str,
+        chunk_count: int,
+    ) -> None:
+        """
+        Writes a given DataFrame to the Deltalake.
+
+        Given a DataFrame, a table name and load method, write the DataFrame
+        to the given Delta Table either incrementally or by truncating and
+        populating the table. If the table doens't exist it's created.
+
+        Args:
+            df (DataFrame): The DataFrame to write out.
+            table_name (String): The name of the Delta Table.
+            load_method (String): The method by which to load the data, either
+                incrementally, or by truncating and populating.
+            business_key (String): The business key for the table, required if
+                using an incremental load method.
+            chunk_count (Integer): The number of chunks already written.
+                Alters the behaviour of the load method, if set to truncate
+                the data will be appended for subsequent chunks (so as not to
+                truncate the preceding chunks).
+
+        Returns:
+            None.
+        """
+
+        # write to a temporary table first
+        db.dbms_writer(
+            self.target,
+            df,
+            f"{table_name}_temp",
+            schema=self.schema,
+        )
+
+        with self.target.connect() as cnxn:
+
+            if load_method == "incremental":
+                # Update any existing records in target table
+                update = f"""
+                    UPDATE {self.schema}.{table_name}
+                       SET current_record = 0
+                     WHERE {business_key} IN (
+                          SELECT {business_key}
+                            FROM {self.schema}.{table_name}_temp
+                        );
+                """
+
+                cnxn.execute(text(update))
+
+            insert = f"""
+                INSERT INTO {self.schema}.{table_name}
+                SELECT *
+                  FROM {self.schema}.{table_name}_temp;
+            """
+
+            cnxn.execute(text(insert))
+
+            drop = f"""
+                DROP TABLE {self.schema}.{table_name}_temp;
+            """
+
+            cnxn.execute(text(drop))
+
+            cnxn.close()
+
     def __call__(
         self,
         cls_id: int,
@@ -225,7 +295,7 @@ class BaseClass(ABC):
         for table, parameters in params.items():
             start_time = datetime.now()
             # rows_processed = 0
-            # chunk_count = 0
+            chunk_count = 0
 
             # Set a default chunksize if none given
             chunksize_param = int(
@@ -253,5 +323,10 @@ class BaseClass(ABC):
                         start_time,
                     )
 
-                    print(df)
-                    return
+                    self.write_data(
+                        df,
+                        table,
+                        parameters["load_method"],
+                        parameters["business_key"],
+                        chunk_count,
+                    )
