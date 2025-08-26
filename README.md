@@ -176,7 +176,7 @@ dbms:
   - **sql_driver**: installed ODBC driver for SQL Server.
 - **mdh**: metadata hub settings
   - **database**: name of the metadata database (must exist in SQL Server).
-  - **orchestration**: schema within the mdh database where the orchestration history table resides. Both the schema and the history table must be created, see [history table](#mdhhistorytable).
+  - **orchestration**: schema within the mdh database where the orchestration history table resides. Both the schema and the history table must be created, see [history table](mdhhistorytable).
 - **ods**: operational data store (raw data) settings
   - **type**: target server type (assumed to be mssql).
   - **server**: SQL Server hostname.
@@ -185,15 +185,15 @@ dbms:
   - **pwd**: password.
   - **database**: ODS database name.
   - **trust_cert**: whether to trust the server certificate (False recommended in production).
-  - **<instance>**: schema for each registered instance (e.g., adventureworks).
-- **<system-type>**: source system connection parameters (repeat for each type). Example for dbms:
-  - **<instance>_type**: server type (e.g., mssql), must be supported by cnxns.
-  - **<instance>**: source system hostname.
-  - **<instance>_port**: port of the source system.
-  - **<instance>_uid**: username.
-  - **<instance>_pwd**: password.
-  - **<instance>_database**: source database.
-  - **<instance>_trust_cert**: certificate trust flag (use False in production).
+  - **:instance**: schema for each registered instance (e.g., adventureworks).
+- **:system-type**: source system connection parameters (repeat for each type). Example for dbms:
+  - **:instance_type**: server type (e.g., mssql), must be supported by cnxns.
+  - **:instance**: source system hostname.
+  - **:instance_port**: port of the source system.
+  - **:instance_uid**: username.
+  - **:instance_pwd**: password.
+  - **:instance_database**: source database.
+  - **:instance_trust_cert**: certificate trust flag (use False in production).
 
 ### MDH History Table
 The history table tracks each run:
@@ -233,7 +233,7 @@ Run main.py to ingest data:
 ```shell
 python main.py -i *<instance>
 ```
-As with `deploy` you can call as many instances as you like. The instance is named as it's et in main, for example for:
+As with `deploy` you can call as many instances as you like. The instance is named as it's set in main, for example for:
 ```python
 if "adventureworks" in instances:
     cls_instances["adventureworks"] = cls_dict["DBMSClass"](
