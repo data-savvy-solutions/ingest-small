@@ -1,12 +1,13 @@
 from abc import ABC
 from abc import abstractmethod
+from datetime import datetime
 from typing import Any
 from typing import Generator
 
 import pandas as pd
 from cnxns import dbms as db
+from pandas import DataFrame
 from sqlalchemy import text
-# from datetime import datetime
 
 
 class BaseClass(ABC):
@@ -151,6 +152,57 @@ class BaseClass(ABC):
         else:
             return df[modified_field]
 
+    def transform_data(
+        self,
+        df: DataFrame,
+        table_name: str,
+        start_time: datetime,
+    ) -> DataFrame:
+        """
+        Returns the input DataFrame, transformed to match the table definition.
+
+        Given a DataFrame, and a table name, transform the structure of the
+        DataFrame to match the output for the given table. If a field from the
+        output table is missing, it will be added and populated with NULL
+        values. If a field is missing from the output table it will be dropped
+        from the DataFrame. This avoids errors when changes are made to the
+        source entity. Additionally, adds some metadata.
+
+        Args:
+            df (DataFrame): The DataFrame to transform.
+            table_name (String): The table for whose definition the DataFrame
+                will be transformed.
+            start_time (DateTime): the datetime the current run started.
+
+        Returns:
+            DataFrame: The input DataFrame, transformed to match the output
+                table.
+        """
+
+        df["ingest_datetime"] = start_time
+        df["current_record"] = True
+
+        # Get column list only
+        fields = db.dbms_reader(
+            self.target,
+            query=text(
+                f"""
+                SELECT TOP(0) *
+                  FROM {self.schema}.{table_name}
+            """,
+            ),
+        ).columns
+
+        missing_fields = set(fields) - set(df.columns)
+        if missing_fields:
+            new_cols = pd.DataFrame(
+                {col: [None] * len(df) for col in missing_fields},
+            )
+
+            df = pd.concat([df, new_cols], axis=1)
+
+        return df[fields]
+
     def __call__(
         self,
         cls_id: int,
@@ -171,7 +223,7 @@ class BaseClass(ABC):
         params = self.read_params()
 
         for table, parameters in params.items():
-            # start_time = datetime.now()
+            start_time = datetime.now()
             # rows_processed = 0
             # chunk_count = 0
 
@@ -193,4 +245,13 @@ class BaseClass(ABC):
                 max_modified,
                 chunksize_param,
             ):
-                print(chunk)
+
+                if len(chunk) > 1:
+                    df = self.transform_data(
+                        chunk,
+                        table,
+                        start_time,
+                    )
+
+                    print(df)
+                    return

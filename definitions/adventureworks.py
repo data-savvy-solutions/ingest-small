@@ -56,7 +56,9 @@ def get_ddl() -> dict:
             [DepartmentID] [SMALLINT] NOT NULL
             ,[Name] [VARCHAR](256) NOT NULL
             ,[GroupName] [VARCHAR](256) NOT NULL
-            ,[ModifiedDate] [DATETIME] NOT NULL,
+            ,[ModifiedDate] [DATETIME] NOT NULL
+            ,[ingest_datetime] [DATETIME] NOT NULL
+            ,[current_record] [BIT] NOT NULL
         );"""
 
     return definitions
