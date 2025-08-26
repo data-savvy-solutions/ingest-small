@@ -19,7 +19,8 @@ def populate_entity_list() -> dict:
                 ,entity_name
                 ,business_key
                 ,modified_field
-                ,ingest_method
+                ,load_method
+                ,chunksize
                 ,active
             )
 
@@ -29,6 +30,7 @@ def populate_entity_list() -> dict:
                 ,'DepartmentID'
                 ,'ModifiedDate'
                 ,'incremental'
+                ,NULL
                 ,1
             )
 

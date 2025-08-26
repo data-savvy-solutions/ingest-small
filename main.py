@@ -2,6 +2,7 @@ from datetime import datetime
 
 import yaml
 
+import ingest_classes as classes
 from helpers.cnxns_helper import get_cnxns
 from helpers.log_helper import update_log_finished
 from helpers.log_helper import update_log_running
@@ -23,6 +24,17 @@ def run(
         job,
         dttm_started,
     )
+
+    cls_dict = classes.class_dict
+
+    adventureworks = cls_dict["DBMSClass"](
+        {
+            "source": cnxns["adventureworks"],
+            "target": cnxns["ods"],
+        },
+        config["ods"]["adventureworks"],
+    )
+    adventureworks()
 
     update_log_finished(
         cnxns["mdh"],

@@ -43,10 +43,11 @@ def get_ddl() -> dict:
     definitions[f"{schema}_entity_params"] = f"""
         CREATE TABLE [{schema}].[entity_params](
                [table_name] [NVARCHAR](75) NOT NULL PRIMARY KEY
-               ,[entity_name] [NVARCHAR](75) NULL
+               ,[entity_name] [NVARCHAR](75) NOT NULL
                ,[business_key] [NVARCHAR](75) NOT NULL
                ,[modified_field] [NVARCHAR](75) NULL
-               ,[ingest_method] [NVARCHAR](75) NULL
+               ,[load_method] [NVARCHAR](75) NOT NULL
+               ,[chunksize] [INT] NULL
                ,[active] [BIT] NOT NULL
         );"""
 
