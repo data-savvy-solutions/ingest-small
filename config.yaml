@@ -1,5 +1,6 @@
 parameters:
   sql_driver: "ODBC Driver 18 for SQL Server"
+  log_path: "./"
 
 mdh:
   database: "mdh"
