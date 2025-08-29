@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
 
@@ -139,3 +140,64 @@ class TestBaseClass:
 
             assert result_none is None
             mock_reader_empty.assert_called_once()
+
+    def test_transform(
+        self,
+        base_class_instance,
+    ):
+        """
+        Test transform_data adds missing columns, drops extra, and adds
+        metadata
+        """
+
+        input_df = pd.DataFrame({
+            "customer_id": [1, 2],
+            "extra_column": ["a", "b"],
+        })
+
+        target_columns = pd.DataFrame(
+            columns=[
+                "customer_id",
+                "name",
+                "email",
+                "ingest_datetime",
+                "current_record",
+            ],
+        )
+
+        with patch(
+            "ingest_classes.base_class.db.dbms_reader",
+            return_value=target_columns,
+        ) as mock_reader:
+
+            start_time = datetime(2025, 8, 29, 15, 0, 0)
+
+            result_df = base_class_instance.transform_data(
+                df=input_df,
+                table_name="customers",
+                start_time=start_time,
+            )
+
+            expected_columns = [
+                "customer_id",
+                "name",
+                "email",
+                "ingest_datetime",
+                "current_record",
+            ]
+
+            # Ensure the DataFrame has all target columns
+            assert list(result_df.columns) == expected_columns
+
+            # Extra column should be dropped
+            assert "extra_column" not in result_df.columns
+
+            # Missing columns should be filled with None (except metadata)
+            assert result_df["name"].isna().all()
+            assert result_df["email"].isna().all()
+
+            # Metadata columns should be correctly populated
+            assert (result_df["ingest_datetime"] == start_time).all()
+            assert (result_df["current_record"]).all()
+
+            mock_reader.assert_called_once()
