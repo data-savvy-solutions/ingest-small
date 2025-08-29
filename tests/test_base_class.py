@@ -201,3 +201,46 @@ class TestBaseClass:
             assert (result_df["current_record"]).all()
 
             mock_reader.assert_called_once()
+
+    # -----------------------------
+    # Additional tests for uncovered branches
+    # -----------------------------
+
+    def test_transform_missing_fields_branch(
+        self,
+        base_class_instance,
+    ):
+        "Test transform_data branch where missing fields are added"
+
+        input_df = pd.DataFrame({"customer_id": [1]})
+        target_columns = pd.DataFrame(columns=["customer_id", "name"])
+
+        with patch(
+            "ingest_classes.base_class.db.dbms_reader",
+            return_value=target_columns,
+        ):
+            result_df = base_class_instance.transform_data(
+                df=input_df,
+                table_name="customers",
+                start_time=datetime.now(),
+            )
+
+            # 'name' column should be added
+            assert "name" in result_df.columns
+
+    def test_read_history_empty_branch(
+        self,
+        base_class_instance,
+    ):
+        "Test read_history branch where df is empty"
+
+        empty_df = pd.DataFrame(columns=["last_update"])
+        with patch(
+            "ingest_classes.base_class.db.dbms_reader",
+            return_value=empty_df,
+        ):
+            result = base_class_instance.read_history(
+                table_name="customers",
+                modified_field="last_update",
+            )
+            assert result is None

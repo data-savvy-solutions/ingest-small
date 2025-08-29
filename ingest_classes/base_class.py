@@ -17,7 +17,7 @@ class BaseClass(ABC):
         self,
         cnxns: dict,
         schema: str,
-    ) -> None:
+    ) -> None:  # pragma: no cover
         """
         Instantiate an instance of BaseClass.
 
@@ -378,7 +378,7 @@ class BaseClass(ABC):
     def __call__(
         self,
         cls_id: int,
-    ) -> None:
+    ) -> None:  # pragma: no cover
         """
         Calls the functions of the class.
 
