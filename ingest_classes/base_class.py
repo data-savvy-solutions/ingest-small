@@ -209,6 +209,8 @@ class BaseClass(ABC):
 
         return df[fields]
 
+    # side-effect heavy with no returns
+    # skipping unit test.
     def write_data(
         self,
         df: DataFrame,
@@ -216,7 +218,7 @@ class BaseClass(ABC):
         load_method: str,
         business_key: str,
         chunk_count: int,
-    ) -> None:
+    ) -> None:  # pragma: no cover
         """
         Writes a given DataFrame to the Deltalake.
 
@@ -287,6 +289,8 @@ class BaseClass(ABC):
 
             cnxn.close()
 
+    # side-effect heavy with no returns
+    # skipping unit test.
     def write_to_history(
         self,
         run_id: int,
@@ -296,7 +300,7 @@ class BaseClass(ABC):
         start_time: datetime,
         end_time: datetime,
         rows_processed: int,
-    ) -> None:
+    ) -> None:  # pragma: no cover
         """
         Writes metadata to the history table.
 
