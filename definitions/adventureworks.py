@@ -1,64 +1,39 @@
+import importlib.util
+import sys
+from glob import glob
+
+
 def get_ddl() -> dict:
     """
-    Returns a dictionary of data types.
+    Return dictionary of CREATE TABLE SQL statements.
 
-    Returns a dictionary of dictionaries. Each nested dictionary represents a
-    table, with the key representing a column header and the value a data type.
+    Collect CREATE TABLE SQL statements from adventureworks/ subdirectory and
+    return as a single dictionary.
 
     Args:
         None
 
     Returns:
-        Dictionary: a dictionary of dictionaries representing tables and their
-            data types.
+        Dictionary: CREATE TABLE SQL statements related to housing.
     """
 
     schema = "ods_adventureworks"
 
-    definitions = {}
+    modules = glob("definitions/adventureworks/*.py")
 
-    # labelling scripts allows multiple deploys
-    definitions[f"{schema}_schema"] = f"""
-        CREATE SCHEMA {schema};
-    """
+    tables = {
+        f"{schema}_database": f"""
+            CREATE SCHEMA {schema};
+        """,
+    }
 
-    definitions[f"{schema}_history"] = f"""
-        CREATE TABLE [{schema}].[history](
-               [id] [bigint] NOT NULL IDENTITY(1,1) PRIMARY KEY
-               ,[run_id] [bigint] NOT NULL
-               ,[table_name] [nvarchar](100) NOT NULL
-               ,[start_time] [datetime] NOT NULL
-               ,[end_time] [datetime] NOT NULL
-               ,[time_taken] [int] NOT NULL
-               ,[rows_processed] [int] NOT NULL
-               ,[modifieddate] [datetime] NULL
-    );"""
+    for module in modules:
+        spec = importlib.util.spec_from_file_location(module, module)
+        if not spec or not spec.loader:
+            raise ImportError("Cannot load module 'my_module'")
+        ddl = importlib.util.module_from_spec(spec)
+        sys.modules[module] = ddl
+        spec.loader.exec_module(ddl)
+        tables.update(ddl.get_ddl())
 
-    # drop and create entity params to ensure latest data
-    definitions[f"{schema}_drop_entity_parameters"] = f"""
-        IF OBJECT_ID('{schema}.entity_params', 'U') IS NOT NULL
-        DROP TABLE {schema}.entity_params
-    ;"""
-
-    definitions[f"{schema}_entity_params"] = f"""
-        CREATE TABLE [{schema}].[entity_params](
-               [table_name] [NVARCHAR](75) NOT NULL PRIMARY KEY
-               ,[entity_name] [NVARCHAR](75) NOT NULL
-               ,[business_key] [NVARCHAR](75) NOT NULL
-               ,[modified_field] [NVARCHAR](75) NULL
-               ,[load_method] [NVARCHAR](75) NOT NULL
-               ,[chunksize] [INT] NULL
-               ,[active] [BIT] NOT NULL
-        );"""
-
-    definitions[f"{schema}_Department"] = f"""
-        CREATE TABLE [{schema}].[Department](
-            [DepartmentID] [SMALLINT] NOT NULL
-            ,[Name] [VARCHAR](256) NOT NULL
-            ,[GroupName] [VARCHAR](256) NOT NULL
-            ,[ModifiedDate] [DATETIME] NOT NULL
-            ,[ingest_datetime] [DATETIME] NOT NULL
-            ,[current_record] [BIT] NOT NULL
-        );"""
-
-    return definitions
+    return tables
