@@ -43,8 +43,13 @@ class DBMSClass(BaseClass):
         """
 
         if max_modified:
+            # Convert precision to match SQL
+            max_modified_str = (
+                max_modified.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+            )
+
             query += f"""
-                WHERE {modified_field} > '{max_modified}'
+                WHERE {modified_field} > '{max_modified_str}'
                 ORDER BY {modified_field} asc;
             """
 
