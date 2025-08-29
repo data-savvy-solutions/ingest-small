@@ -95,3 +95,47 @@ class TestBaseClass:
 
             assert result == expected
             mock_reader.assert_called_once()
+
+    def test_read_history(
+        self,
+        base_class_instance,
+    ):
+        "Test read_history returns the correct maximum value or None"
+
+        # Case 1: DataFrame has data
+        test_df = pd.DataFrame(
+            [
+                {"last_update": "2025-08-29T12:00:00"},
+            ],
+        )
+
+        with patch(
+            "ingest_classes.base_class.db.dbms_reader",
+            return_value=test_df,
+        ) as mock_reader:
+
+            result = base_class_instance.read_history(
+                table_name="customers",
+                modified_field="last_update",
+            )
+
+            assert result == "2025-08-29T12:00:00"
+            mock_reader.assert_called_once()
+
+        # Case 2: DataFrame is empty
+        empty_df = pd.DataFrame(
+            columns=["last_update"],
+        )
+
+        with patch(
+            "ingest_classes.base_class.db.dbms_reader",
+            return_value=empty_df,
+        ) as mock_reader_empty:
+
+            result_none = base_class_instance.read_history(
+                table_name="customers",
+                modified_field="last_update",
+            )
+
+            assert result_none is None
+            mock_reader_empty.assert_called_once()
