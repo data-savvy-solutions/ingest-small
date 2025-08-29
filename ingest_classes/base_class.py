@@ -318,7 +318,7 @@ class BaseClass(ABC):
             None.
         """
 
-        time_taken = int((start_time - end_time).total_seconds())
+        time_taken = int((end_time - start_time).total_seconds())
         start_time_str = start_time.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
         end_time_str = end_time.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
