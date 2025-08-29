@@ -144,6 +144,7 @@ class BaseClass(ABC):
         query = f"""
             SELECT TOP(1) {modified_field}
               FROM {self.schema}.history
+             WHERE table_name = '{table_name}'
              ORDER BY run_id desc;
         """
 
