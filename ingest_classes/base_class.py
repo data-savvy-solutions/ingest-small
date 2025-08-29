@@ -98,10 +98,15 @@ class BaseClass(ABC):
                 },
             }
 
+        query = f"""
+            SELECT *
+              FROM {self.schema}.entity_params
+             WHERE active = 1;
+        """
+
         df = db.dbms_reader(
             self.target,
-            table_name="entity_params",
-            schema=self.schema,
+            query=text(query),
         )
 
         params = df.apply(
@@ -352,7 +357,7 @@ class BaseClass(ABC):
                 max_modified = db.dbms_reader(
                     cnxn,
                     query=text(query),
-                )["max_modified"][0]
+                )["max_modified"][0].strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
                 update = f"""
                     UPDATE {self.schema}.history
