@@ -198,7 +198,7 @@ def populate_entity_list() -> dict:
             ,(
                 'BillOfMaterials'
                 ,'Production.BillOfMaterials'
-                ,'StateProvinceID'
+                ,'BillOfMaterialsID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -207,7 +207,7 @@ def populate_entity_list() -> dict:
             ,(
                 'Culture'
                 ,'Production.Culture'
-                ,'StateProvinceID'
+                ,'CultureID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -216,7 +216,7 @@ def populate_entity_list() -> dict:
             ,(
                 'Document'
                 ,'Production.Document'
-                ,'StateProvinceID'
+                ,'DocumentNode'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -225,7 +225,16 @@ def populate_entity_list() -> dict:
             ,(
                 'Illustration'
                 ,'Production.Illustration'
-                ,'StateProvinceID'
+                ,'IllustrationID'
+                ,'ModifiedDate'
+                ,'incremental'
+                ,NULL
+                ,1
+            )
+            ,(
+                'Location'
+                ,'Production.Location'
+                ,'LocationID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -234,7 +243,7 @@ def populate_entity_list() -> dict:
             ,(
                 'Product'
                 ,'Production.Product'
-                ,'StateProvinceID'
+                ,'ProductID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -243,7 +252,7 @@ def populate_entity_list() -> dict:
             ,(
                 'ProductCategory'
                 ,'Production.ProductCategory'
-                ,'StateProvinceID'
+                ,'ProductCategoryID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -252,7 +261,7 @@ def populate_entity_list() -> dict:
             ,(
                 'ProductCostHistory'
                 ,'Production.ProductCostHistory'
-                ,'StateProvinceID'
+                ,'ProductID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -261,7 +270,7 @@ def populate_entity_list() -> dict:
             ,(
                 'ProductDescription'
                 ,'Production.ProductDescription'
-                ,'StateProvinceID'
+                ,'ProductDescriptionID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -270,7 +279,7 @@ def populate_entity_list() -> dict:
             ,(
                 'ProductDocument'
                 ,'Production.ProductDocument'
-                ,'StateProvinceID'
+                ,'ProductID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -279,7 +288,7 @@ def populate_entity_list() -> dict:
             ,(
                 'ProductInventory'
                 ,'Production.ProductInventory'
-                ,'StateProvinceID'
+                ,'ProductID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -288,7 +297,7 @@ def populate_entity_list() -> dict:
             ,(
                 'ProductListPriceHistory'
                 ,'Production.ProductListPriceHistory'
-                ,'StateProvinceID'
+                ,'ProductID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -297,7 +306,7 @@ def populate_entity_list() -> dict:
             ,(
                 'ProductModel'
                 ,'Production.ProductModel'
-                ,'StateProvinceID'
+                ,'ProductModelID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -306,7 +315,7 @@ def populate_entity_list() -> dict:
             ,(
                 'ProductModelIllustration'
                 ,'Production.ProductModelIllustration'
-                ,'StateProvinceID'
+                ,'ProductModelID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -315,7 +324,7 @@ def populate_entity_list() -> dict:
             ,(
                 'ProductModelProductDescriptionCulture'
                 ,'Production.ProductModelProductDescriptionCulture'
-                ,'StateProvinceID'
+                ,'ProductModelID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -324,7 +333,7 @@ def populate_entity_list() -> dict:
             ,(
                 'ProductPhoto'
                 ,'Production.ProductPhoto'
-                ,'StateProvinceID'
+                ,'ProductPhotoID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -333,7 +342,7 @@ def populate_entity_list() -> dict:
             ,(
                 'ProductProductPhoto'
                 ,'Production.ProductProductPhoto'
-                ,'StateProvinceID'
+                ,'ProductID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -342,7 +351,7 @@ def populate_entity_list() -> dict:
             ,(
                 'ProductReview'
                 ,'Production.ProductReview'
-                ,'StateProvinceID'
+                ,'ProductReviewID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -351,7 +360,7 @@ def populate_entity_list() -> dict:
             ,(
                 'ProductSubcategory'
                 ,'Production.ProductSubcategory'
-                ,'StateProvinceID'
+                ,'ProductSubcategoryID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -360,7 +369,7 @@ def populate_entity_list() -> dict:
             ,(
                 'ScrapReason'
                 ,'Production.ScrapReason'
-                ,'StateProvinceID'
+                ,'ScrapReasonID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -369,7 +378,7 @@ def populate_entity_list() -> dict:
             ,(
                 'TransactionHistory'
                 ,'Production.TransactionHistory'
-                ,'StateProvinceID'
+                ,'TransactionID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -378,7 +387,7 @@ def populate_entity_list() -> dict:
             ,(
                 'TransactionHistoryArchive'
                 ,'Production.TransactionHistoryArchive'
-                ,'StateProvinceID'
+                ,'TransactionID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -387,7 +396,7 @@ def populate_entity_list() -> dict:
             ,(
                 'UnitMeasure'
                 ,'Production.UnitMeasure'
-                ,'StateProvinceID'
+                ,'UnitMeasureCode'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -396,7 +405,7 @@ def populate_entity_list() -> dict:
             ,(
                 'WorkOrder'
                 ,'Production.WorkOrder'
-                ,'StateProvinceID'
+                ,'WorkOrderID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -405,13 +414,12 @@ def populate_entity_list() -> dict:
             ,(
                 'WorkOrderRouting'
                 ,'Production.WorkOrderRouting'
-                ,'StateProvinceID'
+                ,'WorkOrderID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
                 ,1
             )
-
             ,(
                 'ProductVendor'
                 ,'Purchasing.ProductVendor'
@@ -421,7 +429,6 @@ def populate_entity_list() -> dict:
                 ,NULL
                 ,1
             )
-
             ,(
                 'PurchaseOrderDetail'
                 ,'Purchasing.PurchaseOrderDetail'
@@ -431,7 +438,6 @@ def populate_entity_list() -> dict:
                 ,NULL
                 ,1
             )
-
             ,(
                 'PurchaseOrderHeader'
                 ,'Purchasing.PurchaseOrderHeader'
@@ -441,7 +447,6 @@ def populate_entity_list() -> dict:
                 ,NULL
                 ,1
             )
-
             ,(
                 'ShipMethod'
                 ,'Purchasing.ShipMethod'
