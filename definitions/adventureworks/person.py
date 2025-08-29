@@ -33,7 +33,7 @@ def get_ddl() -> dict:
         );"""
 
     definitions[f"{schema}_AddressType"] = f"""
-        CREATE TABLE [{schema}].[Address](
+        CREATE TABLE [{schema}].[AddressType](
                [AddressTypeID] [INT] NOT NULL
                ,[Name] [CHAR](256) NOT NULL
                ,[rowguid] [UNIQUEIDENTIFIER] NOT NULL
@@ -135,15 +135,15 @@ def get_ddl() -> dict:
     definitions[f"{schema}_PersonPhone"] = f"""
         CREATE TABLE [{schema}].[PersonPhone](
                [BusinessEntityID] [INT] NOT NULL
-               ,[PhoneNumber] [INT] NOT NULL
+               ,[PhoneNumber] [CHAR](20) NOT NULL
                ,[PhoneNumberTypeID] [INT] NOT NULL
                ,[ModifiedDate] [DATETIME] NOT NULL
                ,[ingest_datetime] [DATETIME] NOT NULL
                ,[current_record] [BIT] NOT NULL
         );"""
 
-    definitions[f"{schema}_PhoneNumber"] = f"""
-        CREATE TABLE [{schema}].[PhoneNumber](
+    definitions[f"{schema}_PhoneNumberType"] = f"""
+        CREATE TABLE [{schema}].[PhoneNumberType](
                [PhoneNumberTypeID] [INT] NOT NULL
                ,[Name] [CHAR](256) NOT NULL
                ,[ModifiedDate] [DATETIME] NOT NULL

@@ -191,9 +191,9 @@ def get_ddl() -> dict:
 
     definitions[f"{schema}_SalesTerritory"] = f"""
         CREATE TABLE [{schema}].[SalesTerritory](
-               [territoryid] [INT] not null
-               ,[name] [CHAR](256) not null
-               ,[countryregioncode] [NVARCHAR](3) not null
+               [TerritoryID] [INT] NOT NULL
+               ,[Name] [CHAR](256) NOT NULL
+               ,[CountryRegionCode] [NVARCHAR](3) NOT NULL
                ,[Group] [NVARCHAR](50) NOT NULL
                ,[SalesYTD] [MONEY] NOT NULL
                ,[SalesLastYear] [MONEY] NOT NULL

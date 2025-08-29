@@ -34,13 +34,14 @@ def populate_entity_list() -> dict:
                 ,1
             )
             ,(
+                -- sql_variant datatype can't be read via ODBC
                 'Employee'
                 ,'HumanResources.Employee'
                 ,'BusinessEntityID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
-                ,1
+                ,0
             )
             ,(
                 'EmployeeDepartmentHistory'
@@ -79,13 +80,14 @@ def populate_entity_list() -> dict:
                 ,1
             )
             ,(
+                -- sql_variant datatype can't be read via ODBC
                 'Address'
                 ,'Person.Address'
                 ,'AddressID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
-                ,1
+                ,0
             )
             ,(
                 'AddressType'
@@ -178,8 +180,8 @@ def populate_entity_list() -> dict:
                 ,1
             )
             ,(
-                'PhoneNumber'
-                ,'Person.PhoneNumber'
+                'PhoneNumberType'
+                ,'Person.PhoneNumberType'
                 ,'PhoneNumberTypeID'
                 ,'ModifiedDate'
                 ,'incremental'
@@ -214,13 +216,14 @@ def populate_entity_list() -> dict:
                 ,1
             )
             ,(
+                -- sql_variant datatype can't be read via ODBC
                 'Document'
                 ,'Production.Document'
                 ,'DocumentNode'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
-                ,1
+                ,0
             )
             ,(
                 'Illustration'
@@ -277,13 +280,14 @@ def populate_entity_list() -> dict:
                 ,1
             )
             ,(
+                -- sql_variant datatype can't be read via ODBC
                 'ProductDocument'
                 ,'Production.ProductDocument'
                 ,'ProductID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
-                ,1
+                ,0
             )
             ,(
                 'ProductInventory'
@@ -325,15 +329,6 @@ def populate_entity_list() -> dict:
                 'ProductModelProductDescriptionCulture'
                 ,'Production.ProductModelProductDescriptionCulture'
                 ,'ProductModelID'
-                ,'ModifiedDate'
-                ,'incremental'
-                ,NULL
-                ,1
-            )
-            ,(
-                'ProductPhoto'
-                ,'Production.ProductPhoto'
-                ,'ProductPhotoID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -584,8 +579,8 @@ def populate_entity_list() -> dict:
             )
             ,(
                 'SalesTerritory'
-                ,'Sales.territoryid'
-                ,'BusinessEntityID'
+                ,'Sales.SalesTerritory'
+                ,'territoryid'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL
@@ -594,7 +589,7 @@ def populate_entity_list() -> dict:
             ,(
                 'SalesTerritoryHistory'
                 ,'Sales.SalesTerritoryHistory'
-                ,'SalesTerritoryID'
+                ,'BusinessEntityID'
                 ,'ModifiedDate'
                 ,'incremental'
                 ,NULL

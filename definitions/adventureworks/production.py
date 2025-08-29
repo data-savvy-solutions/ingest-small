@@ -207,18 +207,6 @@ def get_ddl() -> dict:
                ,[current_record] [BIT] NOT NULL
     );"""
 
-    definitions[f"{schema}_ProductPhoto"] = f"""
-        CREATE TABLE [{schema}].[ProductPhoto](
-               [ProductPhotoID] [int] NOT NULL
-               ,[ThumbNailPhoto] [varbinary](MAX) NULL
-               ,[ThumbnailPhotoFileName] [nvarchar](50) NULL
-               ,[LargePhoto] [varbinary](MAX) NULL
-               ,[LargePhotoFileName] [nvarchar](50) NULL
-               ,[ModifiedDate] [datetime] NOT NULL
-               ,[ingest_datetime] [DATETIME] NOT NULL
-               ,[current_record] [BIT] NOT NULL
-    );"""
-
     definitions[f"{schema}_ProductProductPhoto"] = f"""
         CREATE TABLE [{schema}].[ProductProductPhoto](
                [ProductID] [int] NOT NULL
