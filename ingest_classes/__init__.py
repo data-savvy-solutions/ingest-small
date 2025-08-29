@@ -1,4 +1,4 @@
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     import importlib.util
     import pkgutil
     from inspect import getmembers, isclass
