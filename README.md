@@ -1,7 +1,6 @@
-# ingest-small
+# ingest-python
 
-**ingest-small** is a Python-based ingestion tool for extracting data from source systems and persisting it in a SQL Server database.
-It is designed for **small to medium datasets**—where "small" means datasets that do not require big data tooling.
+**ingest-python** is an ingestion tool written in Python (relying only on locally installable packages such as Pandas) designed to extract data from source systems and persist it into SQL Server. It is intended for small datasets, where "small" refers to data volumes that do not require big data frameworks.
 
 The tool supports ingesting datasets larger than available memory through **Pandas chunking**. It forms the **Extract and Load** portion of an ELT pipeline.
 
@@ -9,7 +8,7 @@ The tool supports ingesting datasets larger than available memory through **Pand
 
 ## How it Works
 
-`ingest-small` is structured around a **Base Class** that encapsulates core SQL Server operations.
+`ingest-python` is structured around a **Base Class** that encapsulates core SQL Server operations.
 
 Key methods include:
 - **read_params**: Reads an `entity_params` table and parses parameters into a dictionary. See [Entity Params](#entity-params) for details.
